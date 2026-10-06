@@ -1,0 +1,11 @@
+announcement_id,title,message,posted_date,target_audience,posted_by_user_id,category,priority
+AN001,Internal Examination - Series 1,Internal assessment tests begin from 10 Feb 2026. Timetable is available on the notice board.,2026-02-02,All Students,U001,Exam,High
+AN002,Python Assignment Deadline,"Submit the Python programming assignment (Unit 3) by 20 Feb 2026, 5:00 PM.",2026-02-12,All Students,U002,Assignment,Medium
+AN003,DBMS Mini Project Submission,Mini project reports on Database Management Systems are due on 5 Mar 2026.,2026-02-20,All Students,U002,Assignment,Medium
+AN004,Department Tech Fest - CodeVerse 2026,"Annual department tech fest with coding, quiz and web design contests on 14 Mar 2026.",2026-03-01,All Students,U001,Event,Medium
+AN005,Placement Training Programme,"Aptitude and communication training for placements from 16 Mar 2026, 4:00 PM in Seminar Hall.",2026-03-05,All Students,U001,Placement,High
+AN006,Holiday - Tamil New Year,College will remain closed on 14 Apr 2026 on account of Tamil New Year.,2026-04-08,All Students,U001,Holiday,Low
+AN007,Faculty Meeting,Department faculty meeting on curriculum review on 18 Mar 2026 at 3:30 PM.,2026-03-12,Faculty,U001,Meeting,Medium
+AN008,Attendance Warning,Students below 75% attendance must meet their faculty mentor before 25 Mar 2026.,2026-03-15,All Students,U001,Attendance,High
+AN009,Guest Lecture on Cloud Computing,"Industry expert session on cloud computing on 28 Mar 2026, 11:00 AM in Auditorium.",2026-03-20,All Students,U003,Event,Medium
+AN010,Semester End Examination Schedule,End-semester examinations start on 20 Apr 2026. Hall tickets will be issued from 10 Apr.,2026-04-01,All Students,U001,Exam,High

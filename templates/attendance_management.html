@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Management - College Portal{% endblock %}
+{% block page_heading %}Student Attendance Management{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <i class="fa-solid fa-clock-rotate-left" style="color: var(--primary);"></i>
+        <span>Subject-Wise & Overall Attendance Tracker</span>
+      </div>
+      <p style="font-size: 0.82rem; color: #64748b; margin-top: 0.2rem;">
+        College Regulation: Minimum 75% attendance in every subject is mandatory to appear for semester end examinations (SOP 01).
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.6rem; align-items: center;">
+      <input type="text" id="tableSearchInput" placeholder="Filter student or subject..." class="chat-input" style="width: 220px; padding: 0.4rem 0.75rem;">
+      {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+      <button class="btn btn-primary btn-sm" onclick="openModal('attendanceModal')">
+        <i class="fa-solid fa-plus"></i> Record Attendance
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Attendance ID</th>
+          <th>Student</th>
+          <th>Subject</th>
+          <th>Total Classes</th>
+          <th>Attended</th>
+          <th>Percentage</th>
+          <th>Eligibility Status</th>
+          {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+          <th>Action</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in attendance %}
+        <tr>
+          <td><code>{{ a.attendance_id }}</code></td>
+          <td>
+            <strong>{{ a.student_name or a.student_id }}</strong><br>
+            <span style="font-size: 0.72rem; color: #64748b;">{{ a.student_id }}</span>
+          </td>
+          <td>
+            <strong>{{ a.subject_name }}</strong><br>
+            <span style="font-size: 0.72rem; color: #64748b;">{{ a.subject_code }}</span>
+          </td>
+          <td>{{ a.total_classes }}</td>
+          <td>{{ a.classes_attended }}</td>
+          <td style="min-width: 140px;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-weight: 700; font-size: 0.88rem; color: {% if a.attendance_percentage >= 75 %}#059669{% else %}#dc2626{% endif %};">
+                {{ a.attendance_percentage }}%
+              </span>
+            </div>
+            <div class="progress-bar-container" style="margin-top: 4px;">
+              <div class="progress-track" style="height: 6px;">
+                <div class="progress-fill {% if a.attendance_percentage >= 75 %}high{% elif a.attendance_percentage >= 60 %}mid{% else %}low{% endif %}" style="width: {{ a.attendance_percentage }}%;"></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            {% if a.attendance_percentage >= 75 %}
+              <span class="badge badge-success">Eligible</span>
+            {% else %}
+              <span class="badge badge-danger">⚠️ Shortage (Performa III)</span>
+            {% endif %}
+          </td>
+          {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="populateEditAttendance('{{ a.attendance_id }}', '{{ a.student_id }}', '{{ a.subject_id }}', '{{ a.total_classes }}', '{{ a.classes_attended }}')">
+              <i class="fa-solid fa-pen-to-square"></i> Update
+            </button>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RECORD ATTENDANCE MODAL -->
+{% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+<div id="attendanceModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: #fff; width: 100%; max-width: 480px; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;" id="modalAttTitle">Update Student Attendance</h3>
+      <button onclick="closeModal('attendanceModal')" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form method="POST" action="{{ url_for('api_upsert_attendance') }}">
+      <input type="hidden" name="attendance_id" id="modal_att_id" value="">
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Student</label>
+        <select class="form-control" name="student_id" id="modal_att_student" style="padding-left: 1rem;" required>
+          {% for st in students %}
+          <option value="{{ st.student_id }}">{{ st.student_id }} - {{ st.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Subject</label>
+        <select class="form-control" name="subject_id" id="modal_att_subject" style="padding-left: 1rem;" required>
+          {% for sub in subjects %}
+          <option value="{{ sub.subject_id }}">{{ sub.subject_code }} - {{ sub.subject_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+        <div class="form-group">
+          <label class="form-label">Total Conducted Classes</label>
+          <input type="number" min="1" max="120" class="form-control" name="total_classes" id="modal_att_total" style="padding-left: 1rem;" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Classes Attended</label>
+          <input type="number" min="0" max="120" class="form-control" name="classes_attended" id="modal_att_attended" style="padding-left: 1rem;" required>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('attendanceModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Attendance</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function populateEditAttendance(attId, studentId, subjectId, total, attended) {
+  document.getElementById('modalAttTitle').innerText = 'Update Attendance Record';
+  document.getElementById('modal_att_id').value = attId;
+  document.getElementById('modal_att_student').value = studentId;
+  document.getElementById('modal_att_subject').value = subjectId;
+  document.getElementById('modal_att_total').value = total;
+  document.getElementById('modal_att_attended').value = attended;
+  openModal('attendanceModal');
+}
+</script>
+{% endif %}
+{% endblock %}

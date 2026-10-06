@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}College Portal{% endblock %} - {{ college_name }}</title>
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<div class="app-container">
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo-icon">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <div class="sidebar-brand">
+        <h2>SRCW Portal</h2>
+        <span>Autonomous • NAAC A+</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Navigation</div>
+      
+      <a href="{{ url_for('dashboard') }}" class="nav-item {% if request.path.endswith('/dashboard') %}active{% endif %}">
+        <i class="fa-solid fa-gauge-high nav-icon"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="{{ url_for('marks_management') }}" class="nav-item {% if '/marks' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-chart-column nav-icon"></i>
+        <span>Marks Management</span>
+      </a>
+
+      <a href="{{ url_for('attendance_management') }}" class="nav-item {% if '/attendance' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-clock-rotate-left nav-icon"></i>
+        <span>Attendance</span>
+      </a>
+
+      <a href="{{ url_for('observations') }}" class="nav-item {% if '/observations' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-user-check nav-icon"></i>
+        <span>Student Observations</span>
+      </a>
+
+      <div class="nav-section-title">Institutional</div>
+
+      <a href="{{ url_for('guidelines') }}" class="nav-item {% if '/guidelines' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-book-bookmark nav-icon"></i>
+        <span>College SOP & Rules</span>
+      </a>
+
+      <a href="{{ url_for('faqs') }}" class="nav-item {% if '/faqs' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-circle-question nav-icon"></i>
+        <span>AI Knowledge & FAQs</span>
+      </a>
+
+      <a href="{{ url_for('announcements') }}" class="nav-item {% if '/announcements' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-bullhorn nav-icon"></i>
+        <span>Announcements</span>
+      </a>
+
+      <div class="nav-section-title">Intelligence & AI</div>
+
+      <a href="{{ url_for('analytics') }}" class="nav-item {% if '/analytics' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-brain nav-icon"></i>
+        <span>ML & Analytics</span>
+      </a>
+
+      <a href="{{ url_for('chatbot_page') }}" class="nav-item {% if '/chatbot' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-robot nav-icon"></i>
+        <span>Nova AI Advisor</span>
+      </a>
+
+      {% if current_user and current_user.role == 'Admin' %}
+      <div class="nav-section-title">System Admin</div>
+      <a href="{{ url_for('admin_settings') }}" class="nav-item {% if '/settings' in request.path %}active{% endif %}">
+        <i class="fa-solid fa-database nav-icon"></i>
+        <span>Supabase DB Settings</span>
+      </a>
+      {% endif %}
+    </nav>
+
+    <!-- Sidebar User Footer -->
+    <div class="sidebar-footer">
+      {% if current_user %}
+      <div class="user-chip">
+        <div class="user-avatar">
+          {{ current_user.full_name[:1] }}
+        </div>
+        <div class="user-info">
+          <div class="user-name">{{ current_user.full_name }}</div>
+          <div class="user-role">{{ current_user.role }}{% if current_user.student_id %} ({{ current_user.student_id }}){% endif %}</div>
+        </div>
+      </div>
+      {% else %}
+      <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm" style="width: 100%;">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </a>
+      {% endif %}
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="page-title">
+        <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
+      </div>
+
+      <div class="topbar-actions">
+        <!-- Database Indicator -->
+        <div class="badge-db {% if db_mode == 'sqlite' %}sqlite{% endif %}" title="Active Database Backend">
+          <i class="fa-solid fa-database"></i>
+          <span>{{ 'Supabase (PostgreSQL)' if db_mode == 'supabase' else 'PostgreSQL Ready (SQLite Seeded)' }}</span>
+        </div>
+
+        {% if current_user %}
+        <a href="{{ url_for('logout') }}" class="btn-signout" title="Sign Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </a>
+        {% endif %}
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="content-body">
+      <!-- Flash Notifications -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert-banner {{ category }}">
+              <div class="alert-icon">
+                {% if category == 'danger' %}
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                {% elif category == 'warning' %}
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                {% elif category == 'success' %}
+                  <i class="fa-solid fa-circle-check"></i>
+                {% else %}
+                  <i class="fa-solid fa-circle-info"></i>
+                {% endif %}
+              </div>
+              <div>
+                <div class="alert-title">{{ category|capitalize }} Notice</div>
+                <div class="alert-text">{{ message }}</div>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+
+<!-- ==================== GLOBAL FLOATING CHATGPT-4 MINI AI CHATBOT ==================== -->
+<div id="ai-chat-widget">
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar">
+          <i class="fa-solid fa-sparkles"></i>
+        </div>
+        <div>
+          <h4>Nova AI Advisor</h4>
+          <p>ChatGPT-4 mini • College Assistant</p>
+        </div>
+      </div>
+      <button class="chat-close-btn" id="chatCloseBtn" aria-label="Close Chat">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Suggested Quick Prompts -->
+    <div class="chat-suggestions">
+      <button class="chat-pill" data-query="What is the minimum attendance required?">Attendance Rule</button>
+      <button class="chat-pill" data-query="How is my attendance?">My Attendance</button>
+      <button class="chat-pill" data-query="Which subjects do I need to improve?">Improvement Areas</button>
+      <button class="chat-pill" data-query="What are the examination guidelines?">Exam Guidelines</button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg bot">
+        Hello {% if current_user %}{{ current_user.full_name.split()[0] }}{% else %}there{% endif %}! 👋 I'm <strong>Nova</strong>, your AI campus guide powered like ChatGPT-4 mini. 
+        How can I help you today with your courses, marks, attendance, or college regulations?
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Ask Nova anything about college..." autocomplete="off">
+      <button class="chat-send-btn" id="chatSendBtn" aria-label="Send">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </div>
+
+  <button class="chat-toggle-btn" id="chatToggleBtn" aria-label="Open AI Assistant">
+    <i class="fa-solid fa-comment-dots"></i>
+  </button>
+</div>
+
+<!-- Global Scripts -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>

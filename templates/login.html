@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In - Sri Ramakrishna College of Arts and Science for Women</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 10% 20%, rgb(15, 23, 42) 0%, rgb(30, 58, 138) 90.2%);
+      padding: 1.5rem;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 960px;
+      background: #ffffff;
+      border-radius: 20px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+    }
+    .login-brand-panel {
+      background: linear-gradient(135deg, #1e3a8a, #047857);
+      color: #ffffff;
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .brand-logo-large {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(8px);
+    }
+    .login-form-panel {
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 0.4rem;
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      font-size: 0.9rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      outline: none;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+    .form-control:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .demo-creds-box {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 10px;
+    }
+    .demo-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .btn-demo-creds {
+      background: #e2e8f0;
+      color: #1e293b;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-demo-creds:hover {
+      background: #2563eb;
+      color: #fff;
+    }
+    @media (max-width: 768px) {
+      .login-container {
+        grid-template-columns: 1fr;
+      }
+      .login-brand-panel {
+        padding: 2rem;
+      }
+      .login-form-panel {
+        padding: 2rem;
+      }
+    }
+  </style>
+</head>
+<body class="login-page">
+
+<div class="login-container">
+  <!-- Left Institutional Showcase -->
+  <div class="login-brand-panel">
+    <div>
+      <div class="brand-logo-large">
+        <i class="fa-solid fa-building-columns"></i>
+      </div>
+      <h2 style="font-size: 1.6rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.75rem;">
+        Sri Ramakrishna College of Arts and Science for Women
+      </h2>
+      <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.5;">
+        Autonomous Institution • Affiliated to Bharathiar University • Reaccredited by NAAC with 'A+' Grade.
+      </p>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <h4 style="font-size: 1.25rem; font-weight: 800;">Top 100</h4>
+          <span style="font-size: 0.75rem; color: #94a3b8;">National Ranking</span>
+        </div>
+        <div>
+          <h4 style="font-size: 1.25rem; font-weight: 800;">90.5%</h4>
+          <span style="font-size: 0.75rem; color: #94a3b8;">Placement Record</span>
+        </div>
+        <div>
+          <h4 style="font-size: 1.25rem; font-weight: 800;">6 Labs</h4>
+          <span style="font-size: 0.75rem; color: #94a3b8;">High-Tech Facilities</span>
+        </div>
+      </div>
+      <div style="font-size: 0.78rem; color: #94a3b8;">
+        <i class="fa-solid fa-location-dot"></i> #395 Sarojini Naidu Rd, Siddhapudur, Coimbatore - 641044
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Login Form -->
+  <div class="login-form-panel">
+    <div style="margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a;">Portal Sign In</h2>
+      <p style="font-size: 0.85rem; color: #64748b;">Enter your college credentials to access your dashboard</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert-banner {{ category }}" style="margin-bottom: 1rem; padding: 0.75rem 1rem;">
+            <div class="alert-text">{{ message }}</div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="form-group">
+        <label class="form-label" for="role">Login As (Portal Role)</label>
+        <select class="form-control" id="role" name="role" style="padding-left: 1rem;" required>
+          <option value="Student">Student Portal</option>
+          <option value="Faculty">Faculty Portal</option>
+          <option value="Admin">System Administrator</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="username">Username / Register ID</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-user input-icon"></i>
+          <input type="text" class="form-control" id="username" name="username" placeholder="e.g. cs001, faculty1, admin" required autofocus>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-size: 0.95rem; margin-top: 0.5rem;">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal
+      </button>
+    </form>
+
+    <!-- 1-Click Demo Logins -->
+    <div class="demo-creds-box">
+      <div style="font-size: 0.76rem; font-weight: 700; color: #475569; text-transform: uppercase;">
+        ⚡ 1-Click Demo Accounts (Click to Auto-Fill):
+      </div>
+      <div class="demo-chips">
+        <button type="button" class="btn-demo-creds" data-user="admin" data-pass="Admin@123" data-role="Admin">
+          👑 Admin (admin)
+        </button>
+        <button type="button" class="btn-demo-creds" data-user="faculty1" data-pass="Faculty@123" data-role="Faculty">
+          👩‍🏫 Faculty (Dr. Meenakshi)
+        </button>
+        <button type="button" class="btn-demo-creds" data-user="cs001" data-pass="Student@001" data-role="Student">
+          🎓 Student (Ananya - Safe)
+        </button>
+        <button type="button" class="btn-demo-creds" data-user="cs007" data-pass="Student@007" data-role="Student">
+          ⚠️ Student (Rahul - Shortage)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

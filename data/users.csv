@@ -1,0 +1,24 @@
+user_id,username,password,role,full_name,student_id,email,status
+U001,admin,Admin@123,Admin,System Administrator,,admin@collegedemo.edu,Active
+U002,faculty1,Faculty@123,Faculty,Dr. Meenakshi Sundar,,meenakshi.sundar@collegedemo.edu,Active
+U003,faculty2,Faculty@123,Faculty,Prof. Rajesh Kannan,,rajesh.kannan@collegedemo.edu,Active
+U004,cs001,Student@001,Student,Ananya Krishnan,CS001,ananya.krishnan@collegedemo.edu,Active
+U005,cs002,Student@002,Student,Priya Venkatesh,CS002,priya.venkatesh@collegedemo.edu,Active
+U006,cs003,Student@003,Student,Kavya Raghunathan,CS003,kavya.raghunathan@collegedemo.edu,Active
+U007,cs004,Student@004,Student,Arjun Subramanian,CS004,arjun.subramanian@collegedemo.edu,Active
+U008,cs005,Student@005,Student,Karthik Murugan,CS005,karthik.murugan@collegedemo.edu,Active
+U009,cs006,Student@006,Student,Divya Shanmugam,CS006,divya.shanmugam@collegedemo.edu,Active
+U010,cs007,Student@007,Student,Rahul Balasubramani,CS007,rahul.balasubramani@collegedemo.edu,Active
+U011,cs008,Student@008,Student,Meena Chandran,CS008,meena.chandran@collegedemo.edu,Active
+U012,cs009,Student@009,Student,Vignesh Ramasamy,CS009,vignesh.ramasamy@collegedemo.edu,Active
+U013,cs010,Student@010,Student,Lakshmi Narayanan,CS010,lakshmi.narayanan@collegedemo.edu,Active
+U014,cs011,Student@011,Student,Surya Prakash,CS011,surya.prakash@collegedemo.edu,Active
+U015,cs012,Student@012,Student,Harini Selvaraj,CS012,harini.selvaraj@collegedemo.edu,Active
+U016,cs013,Student@013,Student,Aravind Kumar,CS013,aravind.kumar@collegedemo.edu,Active
+U017,cs014,Student@014,Student,Swetha Duraisamy,CS014,swetha.duraisamy@collegedemo.edu,Active
+U018,cs015,Student@015,Student,Mohan Raj,CS015,mohan.raj@collegedemo.edu,Active
+U019,cs016,Student@016,Student,Deepika Palanisamy,CS016,deepika.palanisamy@collegedemo.edu,Active
+U020,cs017,Student@017,Student,Sanjay Gopalan,CS017,sanjay.gopalan@collegedemo.edu,Active
+U021,cs018,Student@018,Student,Revathi Anand,CS018,revathi.anand@collegedemo.edu,Active
+U022,cs019,Student@019,Student,Naveen Thangavel,CS019,naveen.thangavel@collegedemo.edu,Active
+U023,cs020,Student@020,Student,Nithya Sundaram,CS020,nithya.sundaram@collegedemo.edu,Active

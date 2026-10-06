@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Faculty Dashboard - {{ current_user.full_name }}{% endblock %}
+{% block page_heading %}Faculty Academic Portal{% endblock %}
+
+{% block content %}
+<!-- WELCOME HEADER -->
+<div class="card" style="background: linear-gradient(135deg, #1e3a8a, #047857); color: #ffffff; border: none;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <span style="background: rgba(255, 255, 255, 0.2); padding: 0.25rem 0.65rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
+        FACULTY PORTAL • COMPUTER SCIENCE
+      </span>
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-top: 0.5rem;">Welcome, {{ current_user.full_name }}!</h2>
+      <p style="color: #cbd5e1; font-size: 0.88rem; margin-top: 0.25rem;">
+        Monitor class-wide attendance, enter internal/external evaluation scores, record student observations, and publish announcements.
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="{{ url_for('marks_management') }}" class="btn btn-outline" style="background: rgba(255,255,255,0.9); color: #0f172a;">
+        <i class="fa-solid fa-file-signature"></i> Marks Management
+      </a>
+      <a href="{{ url_for('attendance_management') }}" class="btn btn-outline" style="background: rgba(255,255,255,0.9); color: #0f172a;">
+        <i class="fa-solid fa-user-clock"></i> Attendance
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- STATS GRID -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <i class="fa-solid fa-users"></i>
+    </div>
+    <div class="stat-content">
+      <h3>{{ overview.total_students }}</h3>
+      <p>Department Students</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon green">
+      <i class="fa-solid fa-chart-pie"></i>
+    </div>
+    <div class="stat-content">
+      <h3>{{ overview.overall_pass_rate }}%</h3>
+      <p>Class Pass Percentage</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon amber">
+      <i class="fa-solid fa-clipboard-user"></i>
+    </div>
+    <div class="stat-content">
+      <h3>{{ overview.class_att_avg }}%</h3>
+      <p>Avg Department Attendance</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon red">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <div class="stat-content">
+      <h3>{{ overview.at_risk_students|length }}</h3>
+      <p>Shortage / At-Risk Students</p>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN GRID: ASSIGNED COURSES & AT-RISK STUDENTS -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+  <!-- Left: At-Risk & Attendance Shortage Alert Table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-user-shield" style="color: var(--danger);"></i>
+        <span>Students Requiring Faculty Attention & Mentorship</span>
+      </div>
+      <span class="badge badge-danger">{{ overview.at_risk_students|length }} Flagged</span>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Attendance %</th>
+            <th>CGPA</th>
+            <th>Arrears</th>
+            <th>Risk Level</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for st in overview.at_risk_students %}
+          <tr>
+            <td><code>{{ st.student_id }}</code></td>
+            <td style="font-weight: 600;">{{ st.full_name }}</td>
+            <td style="font-weight: 700; color: {% if st.attendance < 75 %}#dc2626{% else %}#059669{% endif %};">
+              {{ st.attendance }}%
+              {% if st.attendance < 75 %}
+                <span class="badge badge-danger" style="font-size: 0.65rem; margin-left: 4px;">Shortage</span>
+              {% endif %}
+            </td>
+            <td>{{ st.cgpa }}</td>
+            <td>
+              {% if st.arrears > 0 %}
+                <span class="badge badge-danger">{{ st.arrears }} Backlog</span>
+              {% else %}
+                <span class="badge badge-success">Nil</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="badge {% if 'High' in st.risk_level %}badge-danger{% else %}badge-warning{% endif %}">
+                {{ st.risk_level }}
+              </span>
+            </td>
+            <td>
+              <a href="{{ url_for('observations') }}?student_id={{ st.student_id }}" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-pen-to-square"></i> Observe
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Right: My Assigned Subjects & Quick Links -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-book-open" style="color: var(--primary);"></i>
+          <span>My Assigned Subjects</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for s in my_subjects %}
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">{{ s.subject_name }}</div>
+            <span style="font-size: 0.74rem; color: #64748b;">Code: {{ s.subject_code }} • {{ s.credits }} Credits</span>
+          </div>
+          <a href="{{ url_for('marks_management') }}?subject={{ s.subject_id }}" class="btn btn-primary btn-sm">
+            Marks
+          </a>
+        </div>
+        {% else %}
+        <p style="font-size: 0.85rem; color: #64748b;">No individual subjects assigned to this login ID.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Quick SOP Reference -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-scale-balanced" style="color: var(--warning);"></i>
+          <span>Academic Evaluation Criteria (SOP 03 & 04)</span>
+        </div>
+      </div>
+      <div style="font-size: 0.82rem; color: #334155; line-height: 1.5;">
+        <p style="margin-bottom: 0.5rem;">• <strong>Internal Marks:</strong> 40 marks total (Tests, Quizzes, Assignments, Record).</p>
+        <p style="margin-bottom: 0.5rem;">• <strong>External Marks:</strong> 60 marks semester examination.</p>
+        <p style="margin-bottom: 0.5rem;">• <strong>Passing Rule:</strong> At least <strong>21 in External</strong> AND <strong>40/100 Total</strong>.</p>
+        <p>• <strong>Attendance Rule:</strong> Minimum <strong>75%</strong> attendance required per subject.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Student Observations - 360° Evaluation{% endblock %}
+{% block page_heading %}Student Observation & 360° Evaluation{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <i class="fa-solid fa-clipboard-user" style="color: var(--accent);"></i>
+        <span>Faculty Mentorship & Holistic Performance Observations</span>
+      </div>
+      <p style="font-size: 0.82rem; color: #64748b; margin-top: 0.2rem;">
+        Record comprehensive assessments covering academic standing, communication, teamwork, technical competencies, and mentor remarks.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 0.6rem; align-items: center;">
+      <input type="text" id="tableSearchInput" placeholder="Filter student..." class="chat-input" style="width: 220px; padding: 0.4rem 0.75rem;">
+      {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+      <button class="btn btn-primary btn-sm" onclick="openModal('observationModal')">
+        <i class="fa-solid fa-plus"></i> Record Observation
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Faculty Evaluator</th>
+          <th>Date</th>
+          <th>Academic Standing</th>
+          <th>Communication</th>
+          <th>Teamwork</th>
+          <th>Technical Skills</th>
+          <th>Remarks & Synthesized Summary</th>
+          {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+          <th>Action</th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for o in observations %}
+        <tr>
+          <td>
+            <strong>{{ o.student_name or o.student_id }}</strong><br>
+            <span style="font-size: 0.72rem; color: #64748b;">{{ o.student_id }}</span>
+          </td>
+          <td>{{ o.faculty_name or 'Faculty Mentor' }}</td>
+          <td><span style="font-size: 0.78rem; color: #64748b;">{{ o.observation_date }}</span></td>
+          <td>
+            <span class="badge {% if o.academic_performance == 'Excellent' %}badge-success{% elif o.academic_performance == 'Good' %}badge-info{% elif o.academic_performance == 'Average' %}badge-warning{% else %}badge-danger{% endif %}">
+              {{ o.academic_performance }}
+            </span>
+          </td>
+          <td>
+            <span class="badge {% if o.communication in ['Excellent', 'Good'] %}badge-success{% else %}badge-secondary{% endif %}">
+              {{ o.communication }}
+            </span>
+          </td>
+          <td>
+            <span class="badge badge-info">{{ o.teamwork }}</span>
+          </td>
+          <td>
+            <span class="badge {% if o.technical_skills in ['Excellent', 'Good'] %}badge-success{% elif o.technical_skills == 'Average' %}badge-warning{% else %}badge-danger{% endif %}">
+              {{ o.technical_skills }}
+            </span>
+          </td>
+          <td style="max-width: 300px;">
+            <div style="font-size: 0.82rem; font-weight: 600; color: #0f172a; margin-bottom: 0.2rem;">
+              "{{ o.faculty_remarks }}"
+            </div>
+            <div style="font-size: 0.74rem; color: #4338ca; background: #eef2ff; padding: 0.35rem 0.5rem; border-radius: 6px; margin-top: 4px;">
+              <strong>Synthesis:</strong> {{ o.academic_performance }} performance, {{ o.communication|lower }} communication, and {% if o.technical_skills == 'Needs Improvement' %}requires practice in core problem-solving{% else %}sound technical foundation{% endif %}.
+            </div>
+          </td>
+          {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="populateEditObservation('{{ o.observation_id }}', '{{ o.student_id }}', '{{ o.academic_performance }}', '{{ o.communication }}', '{{ o.teamwork }}', '{{ o.technical_skills }}', `{{ o.faculty_remarks }}`)">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+          </td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RECORD OBSERVATION MODAL -->
+{% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+<div id="observationModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: #fff; width: 100%; max-width: 520px; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;" id="modalObsTitle">Record Student Observation</h3>
+      <button onclick="closeModal('observationModal')" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form method="POST" action="{{ url_for('api_upsert_observation') }}">
+      <input type="hidden" name="observation_id" id="modal_obs_id" value="">
+
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Student</label>
+          <select class="form-control" name="student_id" id="modal_obs_student" style="padding-left: 1rem;" required>
+            {% for st in students %}
+            <option value="{{ st.student_id }}">{{ st.student_id }} - {{ st.full_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Observation Date</label>
+          <input type="date" class="form-control" name="observation_date" id="modal_obs_date" value="2026-03-25" style="padding-left: 0.75rem;" required>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Academic Performance</label>
+          <select class="form-control" name="academic_performance" id="modal_obs_acad" style="padding-left: 1rem;">
+            <option value="Excellent">Excellent</option>
+            <option value="Good" selected>Good</option>
+            <option value="Average">Average</option>
+            <option value="Needs Improvement">Needs Improvement</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Communication Skills</label>
+          <select class="form-control" name="communication" id="modal_obs_comm" style="padding-left: 1rem;">
+            <option value="Excellent">Excellent</option>
+            <option value="Good" selected>Good</option>
+            <option value="Average">Average</option>
+            <option value="Needs Improvement">Needs Improvement</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Teamwork & Participation</label>
+          <select class="form-control" name="teamwork" id="modal_obs_team" style="padding-left: 1rem;">
+            <option value="Excellent">Excellent</option>
+            <option value="Good" selected>Good</option>
+            <option value="Average">Average</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Technical & Coding Skills</label>
+          <select class="form-control" name="technical_skills" id="modal_obs_tech" style="padding-left: 1rem;">
+            <option value="Excellent">Excellent</option>
+            <option value="Good" selected>Good</option>
+            <option value="Average">Average</option>
+            <option value="Needs Improvement">Needs Improvement</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Faculty Remarks / Mentorship Notes</label>
+        <textarea class="form-control" name="faculty_remarks" id="modal_obs_remarks" rows="3" style="padding: 0.75rem;" placeholder="e.g. Cooperative in team tasks; recommended extra practice in problem solving." required></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('observationModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Observation</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function populateEditObservation(obsId, studentId, acad, comm, team, tech, remarks) {
+  document.getElementById('modalObsTitle').innerText = 'Edit Student Observation';
+  document.getElementById('modal_obs_id').value = obsId;
+  document.getElementById('modal_obs_student').value = studentId;
+  document.getElementById('modal_obs_acad').value = acad;
+  document.getElementById('modal_obs_comm').value = comm;
+  document.getElementById('modal_obs_team').value = team;
+  document.getElementById('modal_obs_tech').value = tech;
+  document.getElementById('modal_obs_remarks').value = remarks;
+  openModal('observationModal');
+}
+</script>
+{% endif %}
+{% endblock %}

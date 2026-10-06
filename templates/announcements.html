@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Announcements & Circulars - SRCW{% endblock %}
+{% block page_heading %}Campus Notice Board & Circulars{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <i class="fa-solid fa-bullhorn" style="color: var(--primary);"></i>
+        <span>Official College & Department Circulars</span>
+      </div>
+      <p style="font-size: 0.82rem; color: #64748b; margin-top: 0.2rem;">
+        Exam schedules, assignment deadlines, placement training drives, tech fest updates, and holiday circulars.
+      </p>
+    </div>
+
+    {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+    <button class="btn btn-primary btn-sm" onclick="openModal('announcementModal')">
+      <i class="fa-solid fa-plus"></i> Post Announcement
+    </button>
+    {% endif %}
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    {% for a in announcements %}
+    <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+      <div style="flex: 1;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem; flex-wrap: wrap;">
+          <span class="badge {% if a.priority == 'High' %}badge-danger{% elif a.priority == 'Medium' %}badge-warning{% else %}badge-info{% endif %}">
+            {{ a.priority }} Priority
+          </span>
+          <span class="badge badge-secondary">{{ a.category }}</span>
+          <span style="font-size: 0.75rem; color: #64748b;">
+            <i class="fa-regular fa-calendar"></i> Posted: {{ a.posted_date }}
+          </span>
+          <span style="font-size: 0.75rem; color: #64748b;">
+            <i class="fa-solid fa-users"></i> Audience: {{ a.target_audience }}
+          </span>
+        </div>
+
+        <h3 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
+          {{ a.title }}
+        </h3>
+        <p style="font-size: 0.88rem; color: #334155; line-height: 1.5;">
+          {{ a.message }}
+        </p>
+        <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 0.5rem;">
+          Author: {{ a.posted_by_name or 'Administration' }}
+        </div>
+      </div>
+
+      {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+      <form method="POST" action="{{ url_for('api_delete_announcement', an_id=a.announcement_id) }}" onsubmit="return confirm('Are you sure you want to remove this circular?');">
+        <button type="submit" class="btn btn-outline btn-sm" style="color: #dc2626; border-color: #fecaca;" title="Delete">
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </form>
+      {% endif %}
+    </div>
+    {% else %}
+    <p style="font-size: 0.9rem; color: #64748b; padding: 2rem 0; text-align: center;">No active circulars posted.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- POST ANNOUNCEMENT MODAL -->
+{% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+<div id="announcementModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: #fff; width: 100%; max-width: 500px; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;">Publish New Announcement</h3>
+      <button onclick="closeModal('announcementModal')" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form method="POST" action="{{ url_for('api_create_announcement') }}">
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Circular Title</label>
+        <input type="text" class="form-control" name="title" placeholder="e.g. End Semester Exam Timetable Released" style="padding-left: 1rem;" required>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-control" name="category" style="padding-left: 1rem;">
+            <option value="Exam">Exam Notification</option>
+            <option value="Assignment">Assignment Deadline</option>
+            <option value="Event">Department Event</option>
+            <option value="Placement">Placement Announcement</option>
+            <option value="Holiday">Holiday</option>
+            <option value="Attendance">Attendance Warning</option>
+            <option value="Meeting">Meeting</option>
+            <option value="General">Important Circular</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Priority</label>
+          <select class="form-control" name="priority" style="padding-left: 1rem;">
+            <option value="High">High Priority</option>
+            <option value="Medium" selected>Medium Priority</option>
+            <option value="Low">Low Priority</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Target Audience</label>
+          <select class="form-control" name="target_audience" style="padding-left: 1rem;">
+            <option value="All Students">All Students</option>
+            <option value="Faculty">Faculty Only</option>
+            <option value="Department">Computer Science Dept</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Publish Date</label>
+          <input type="date" class="form-control" name="posted_date" value="2026-04-04" style="padding-left: 0.75rem;" required>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Message Content</label>
+        <textarea class="form-control" name="message" rows="3" placeholder="Provide complete notice details..." style="padding: 0.75rem;" required></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('announcementModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Publish Announcement</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

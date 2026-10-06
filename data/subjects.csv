@@ -1,0 +1,9 @@
+subject_id,subject_code,subject_name,credits,faculty_user_id
+SUB01,CS201,Python Programming,4,U002
+SUB02,CS202,Database Management Systems,4,U002
+SUB03,CS203,Java Programming,4,U002
+SUB04,CS204,Web Designing,3,U002
+SUB05,CS205,Data Structures,4,U003
+SUB06,CS206,Operating Systems,4,U003
+SUB07,CS207,Computer Networks,3,U003
+SUB08,CS208,Software Engineering,3,U003

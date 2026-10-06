@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}AI Knowledge Base & FAQs - SRCW{% endblock %}
+{% block page_heading %}Institutional Knowledge Base & FAQs{% endblock %}
+
+{% block content %}
+<!-- SMART NLP SEARCH HERO -->
+<div class="card" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: #ffffff; padding: 2.25rem; border: none;">
+  <div style="max-width: 680px; margin: 0 auto; text-align: center;">
+    <div style="font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(255,255,255,0.2); padding: 0.25rem 0.75rem; border-radius: 20px; display: inline-block; margin-bottom: 0.75rem;">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> Scikit-Learn TF-IDF Semantic Search
+    </div>
+    <h2 style="font-size: 1.75rem; font-weight: 800; line-height: 1.25; margin-bottom: 0.75rem;">
+      Have a question about College Rules, Admissions, or Facilities?
+    </h2>
+    <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 1.5rem;">
+      Search our 50+ institutional FAQs covering Principal Dr. K. Chitra, NAAC A+, Fees, Hostels, Hackathons, HODs, Timings, and Placements.
+    </p>
+
+    <!-- Search Form -->
+    <form method="GET" action="{{ url_for('faqs') }}" style="display: flex; gap: 0.5rem; background: #fff; padding: 6px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <input type="text" name="q" value="{{ query }}" placeholder="Ask e.g. What is the fee? Who is principal? What are bus routes?" style="flex: 1; border: none; outline: none; padding: 0.6rem 1.25rem; font-size: 0.92rem; border-radius: 24px; color: #0f172a; font-family: inherit;">
+      <button type="submit" class="btn btn-primary" style="border-radius: 24px; padding: 0.6rem 1.5rem;">
+        <i class="fa-solid fa-magnifying-glass"></i> Search
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- SEARCH RESULTS (IF QUERY PROVIDED) -->
+{% if search_results is not none %}
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i>
+      <span>Semantic Search Results for: "<em>{{ query }}</em>"</span>
+    </div>
+    <span class="badge badge-info">{{ search_results|length }} Matches Found</span>
+  </div>
+
+  {% if search_results %}
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    {% for res in search_results %}
+    <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+        <span class="badge badge-primary">{{ res.category }}</span>
+        <span style="font-size: 0.75rem; font-weight: 700; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 12px;">
+          <i class="fa-solid fa-microchip"></i> {{ res.confidence }}% Match Confidence
+        </span>
+      </div>
+      <h4 style="font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 0.4rem;">{{ res.title }}</h4>
+      <p style="font-size: 0.88rem; color: #334155; line-height: 1.5;">{{ res.content }}</p>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p style="font-size: 0.9rem; color: #64748b; padding: 1rem 0;">
+    No exact semantic match found for "{{ query }}". Try searching for "attendance", "fees", "principal", or "library".
+  </p>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- CATEGORY FILTER CHIPS -->
+<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+  <a href="{{ url_for('faqs', category='All') }}" class="btn btn-sm {% if selected_category == 'All' %}btn-primary{% else %}btn-outline{% endif %}">
+    All ({{ faqs|length }})
+  </a>
+  <a href="{{ url_for('faqs', category='Attendance') }}" class="btn btn-sm {% if selected_category == 'Attendance' %}btn-primary{% else %}btn-outline{% endif %}">
+    Attendance & Leaves
+  </a>
+  <a href="{{ url_for('faqs', category='Admissions') }}" class="btn btn-sm {% if selected_category == 'Admissions' %}btn-primary{% else %}btn-outline{% endif %}">
+    Admissions
+  </a>
+  <a href="{{ url_for('faqs', category='Finance') }}" class="btn btn-sm {% if selected_category == 'Finance' %}btn-primary{% else %}btn-outline{% endif %}">
+    Fees & Scholarships
+  </a>
+  <a href="{{ url_for('faqs', category='Facilities') }}" class="btn btn-sm {% if selected_category == 'Facilities' %}btn-primary{% else %}btn-outline{% endif %}">
+    Hostel & Transport
+  </a>
+  <a href="{{ url_for('faqs', category='Placement') }}" class="btn btn-sm {% if selected_category == 'Placement' %}btn-primary{% else %}btn-outline{% endif %}">
+    Placement & Jobs
+  </a>
+  <a href="{{ url_for('faqs', category='Administration') }}" class="btn btn-sm {% if selected_category == 'Administration' %}btn-primary{% else %}btn-outline{% endif %}">
+    Leadership & HODs
+  </a>
+  <a href="{{ url_for('faqs', category='Activities') }}" class="btn btn-sm {% if selected_category == 'Activities' %}btn-primary{% else %}btn-outline{% endif %}">
+    Clubs & Hackathons
+  </a>
+</div>
+
+<!-- ALL FAQS GRID -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem;">
+  {% for f in faqs %}
+  <div class="card" style="margin-bottom: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+      <span class="badge badge-info">{{ f.category }}</span>
+      <code style="font-size: 0.72rem; color: #64748b;">{{ f.faq_id }}</code>
+    </div>
+    <h4 style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 0.5rem; line-height: 1.35;">
+      {{ f.question }}
+    </h4>
+    <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">
+      {{ f.answer }}
+    </p>
+    {% if f.keywords %}
+    <div style="margin-top: 0.75rem; font-size: 0.72rem; color: #94a3b8;">
+      <i class="fa-solid fa-tags"></i> {{ f.keywords }}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

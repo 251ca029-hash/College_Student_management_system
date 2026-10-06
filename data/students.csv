@@ -1,0 +1,21 @@
+student_id,full_name,email,phone,gender,date_of_birth,course,department,year,semester,batch,city
+CS001,Ananya Krishnan,ananya.krishnan@collegedemo.edu,9697226012,F,2005-09-07,B.Sc Computer Science,Computer Science,2,4,2024-2027,Trichy
+CS002,Priya Venkatesh,priya.venkatesh@collegedemo.edu,9647338124,F,2005-04-15,B.Sc Computer Science,Computer Science,2,4,2024-2027,Coimbatore
+CS003,Kavya Raghunathan,kavya.raghunathan@collegedemo.edu,9755667651,F,2005-03-23,B.Sc Computer Science,Computer Science,2,4,2024-2027,Pollachi
+CS004,Arjun Subramanian,arjun.subramanian@collegedemo.edu,9723718431,M,2005-03-07,B.Sc Computer Science,Computer Science,2,4,2024-2027,Tiruppur
+CS005,Karthik Murugan,karthik.murugan@collegedemo.edu,9756164955,M,2005-07-04,B.Sc Computer Science,Computer Science,2,4,2024-2027,Pollachi
+CS006,Divya Shanmugam,divya.shanmugam@collegedemo.edu,9781971316,F,2005-01-24,B.Sc Computer Science,Computer Science,2,4,2024-2027,Tiruppur
+CS007,Rahul Balasubramani,rahul.balasubramani@collegedemo.edu,9649349722,M,2005-07-03,B.Sc Computer Science,Computer Science,2,4,2024-2027,Madurai
+CS008,Meena Chandran,meena.chandran@collegedemo.edu,9619335534,F,2005-10-07,B.Sc Computer Science,Computer Science,2,4,2024-2027,Coimbatore
+CS009,Vignesh Ramasamy,vignesh.ramasamy@collegedemo.edu,9720709497,M,2005-11-08,B.Sc Computer Science,Computer Science,2,4,2024-2027,Salem
+CS010,Lakshmi Narayanan,lakshmi.narayanan@collegedemo.edu,9770855700,F,2005-02-13,B.Sc Computer Science,Computer Science,2,4,2024-2027,Madurai
+CS011,Surya Prakash,surya.prakash@collegedemo.edu,9738119557,M,2005-03-12,B.Sc Computer Science,Computer Science,2,4,2024-2027,Pollachi
+CS012,Harini Selvaraj,harini.selvaraj@collegedemo.edu,9619583482,F,2005-12-22,B.Sc Computer Science,Computer Science,2,4,2024-2027,Erode
+CS013,Aravind Kumar,aravind.kumar@collegedemo.edu,9831931511,M,2005-09-24,B.Sc Computer Science,Computer Science,2,4,2024-2027,Karur
+CS014,Swetha Duraisamy,swetha.duraisamy@collegedemo.edu,9684752529,F,2005-07-09,B.Sc Computer Science,Computer Science,2,4,2024-2027,Salem
+CS015,Mohan Raj,mohan.raj@collegedemo.edu,9840742311,M,2005-11-11,B.Sc Computer Science,Computer Science,2,4,2024-2027,Coimbatore
+CS016,Deepika Palanisamy,deepika.palanisamy@collegedemo.edu,9718883684,F,2005-06-13,B.Sc Computer Science,Computer Science,2,4,2024-2027,Salem
+CS017,Sanjay Gopalan,sanjay.gopalan@collegedemo.edu,9738538251,M,2005-10-23,B.Sc Computer Science,Computer Science,2,4,2024-2027,Karur
+CS018,Revathi Anand,revathi.anand@collegedemo.edu,9729175900,F,2005-07-21,B.Sc Computer Science,Computer Science,2,4,2024-2027,Pollachi
+CS019,Naveen Thangavel,naveen.thangavel@collegedemo.edu,9685345555,M,2005-03-08,B.Sc Computer Science,Computer Science,2,4,2024-2027,Pollachi
+CS020,Nithya Sundaram,nithya.sundaram@collegedemo.edu,9788320463,F,2005-12-19,B.Sc Computer Science,Computer Science,2,4,2024-2027,Trichy

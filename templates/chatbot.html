@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Nova - AI Campus Advisor (ChatGPT-4 mini){% endblock %}
+{% block page_heading %}Nova AI Campus Advisor{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 880px; margin: 0 auto; height: 75vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; border-radius: 16px;">
+  <!-- Chatbot Header -->
+  <div style="background: linear-gradient(135deg, #1e3a8a, #4338ca); color: #ffffff; padding: 1.25rem 1.75rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 0.85rem;">
+      <div style="width: 44px; height: 44px; border-radius: 50%; background: #ffffff; color: #1e3a8a; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <i class="fa-solid fa-sparkles"></i>
+      </div>
+      <div>
+        <h3 style="font-size: 1.15rem; font-weight: 700;">Nova - Conversational Campus Intelligence</h3>
+        <p style="font-size: 0.78rem; color: #cbd5e1;">Emulating ChatGPT-4 mini with natural humanoid conversation & verified institutional knowledge</p>
+      </div>
+    </div>
+    <span class="badge" style="background: rgba(255,255,255,0.2); color: #fff;">
+      <i class="fa-solid fa-circle" style="font-size: 0.5rem; color: #4ade80;"></i> Online
+    </span>
+  </div>
+
+  <!-- Quick Prompts Toolbar -->
+  <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0.75rem 1.25rem; background: #f1f5f9; border-bottom: 1px solid var(--border-color);">
+    <button class="chat-pill page-pill" data-query="What is the minimum attendance required?">Attendance Rule (75%)</button>
+    <button class="chat-pill page-pill" data-query="How is my attendance?">My Attendance Status</button>
+    <button class="chat-pill page-pill" data-query="Which subjects do I need to improve?">Subjects to Improve</button>
+    <button class="chat-pill page-pill" data-query="Tell me about Principal Dr. K. Chitra">Principal Profile</button>
+    <button class="chat-pill page-pill" data-query="What are the placement records?">Placement Records</button>
+    <button class="chat-pill page-pill" data-query="What is the anti-ragging policy?">Anti-Ragging Helpline</button>
+  </div>
+
+  <!-- Messages History Container -->
+  <div id="fullPageChatMessages" style="flex: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; background: #f8fafc;">
+    <div class="chat-msg bot" style="max-width: 85%;">
+      Hello {% if current_user %}{{ current_user.full_name.split()[0] }}{% else %}there{% endif %}! 👋 I'm <strong>Nova</strong>, your AI campus guide powered by modern language intelligence.
+      <br><br>
+      I'm here to assist you naturally with your academic performance, subject marks, attendance records, exam guidelines, bus transport, hostel rules, or college SOPs. 
+      What would you like to explore together today?
+    </div>
+  </div>
+
+  <!-- Input Bar -->
+  <div style="padding: 1rem 1.25rem; background: #ffffff; border-top: 1px solid var(--border-color); display: flex; gap: 0.75rem; align-items: center;">
+    <input type="text" id="fullPageChatInput" placeholder="Message Nova (e.g. 'How is my attendance?', 'What is the leave procedure?')..." style="flex: 1; border: 1px solid var(--border-color); border-radius: 24px; padding: 0.75rem 1.25rem; font-size: 0.92rem; outline: none; font-family: inherit;">
+    <button id="fullPageChatSendBtn" class="btn btn-primary" style="border-radius: 24px; padding: 0.75rem 1.5rem;">
+      <i class="fa-solid fa-paper-plane"></i> Send
+    </button>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const input = document.getElementById("fullPageChatInput");
+  const sendBtn = document.getElementById("fullPageChatSendBtn");
+  const container = document.getElementById("fullPageChatMessages");
+  const pills = document.querySelectorAll(".page-pill");
+
+  pills.forEach(pill => {
+    pill.addEventListener("click", () => {
+      input.value = pill.getAttribute("data-query");
+      sendMessage();
+    });
+  });
+
+  sendBtn.addEventListener("click", sendMessage);
+  input.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMsg(text, "user");
+    input.value = "";
+
+    // Typing bubble
+    const typingId = "type-" + Date.now();
+    const ind = document.createElement("div");
+    ind.id = typingId;
+    ind.className = "typing-indicator";
+    ind.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+    container.appendChild(ind);
+    container.scrollTop = container.scrollHeight;
+
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const el = document.getElementById(typingId);
+      if (el) el.remove();
+      appendMsg(data.reply, "bot", data.sources);
+    })
+    .catch(err => {
+      const el = document.getElementById(typingId);
+      if (el) el.remove();
+      appendMsg("I apologize, but I encountered a momentary connection hiccup. Please try again.", "bot");
+    });
+  }
+
+  function appendMsg(text, sender, sources = []) {
+    const div = document.createElement("div");
+    div.className = `chat-msg ${sender}`;
+    div.style.maxWidth = "85%";
+
+    let formatted = escapeHtml(text)
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/\n• /g, '<br>• ')
+      .replace(/\n- /g, '<br>• ')
+      .replace(/\n\n/g, '<br><br>')
+      .replace(/\n/g, '<br>');
+
+    div.innerHTML = formatted;
+
+    if (sources && sources.length > 0) {
+      const src = document.createElement("div");
+      src.style.fontSize = "0.74rem";
+      src.style.color = "#64748b";
+      src.style.marginTop = "8px";
+      src.style.borderTop = "1px dashed #cbd5e1";
+      src.style.paddingTop = "4px";
+      src.innerHTML = `📚 Verified Source Reference: <strong>${sources.join(", ")}</strong>`;
+      div.appendChild(src);
+    }
+
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}College SOP & Guidelines - SRCW{% endblock %}
+{% block page_heading %}Institutional Standard Operating Procedures (SOP) & Guidelines{% endblock %}
+
+{% block content %}
+<!-- EMERGENCY & ANTI-RAGGING HIGH-PRIORITY BANNER -->
+<div class="alert-banner danger" style="margin-bottom: 1.5rem;">
+  <div class="alert-icon">
+    <i class="fa-solid fa-shield-halved"></i>
+  </div>
+  <div style="flex: 1;">
+    <div class="alert-title">🛡️ STRICT ZERO-TOLERANCE ANTI-RAGGING MANDATE</div>
+    <div class="alert-text">
+      Ragging in any form (verbal, physical, psychological) is strictly prohibited on campus, hostels, and college transport. 
+      Violators are subject to immediate expulsion and criminal prosecution under state regulations.
+      <br><strong>24/7 National Anti-Ragging Helpline:</strong> <code style="background: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700; color: #b91c1c;">1800-180-5522</code>
+      | <strong>College Emergency Desk:</strong> <code style="background: #fff; padding: 2px 6px; border-radius: 4px; font-weight: 700; color: #b91c1c;">0422-2243624 / 7373144766</code>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY FILTER CHIPS -->
+<div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
+  <a href="{{ url_for('guidelines', category='All') }}" class="btn btn-sm {% if selected_category == 'All' %}btn-primary{% else %}btn-outline{% endif %}">
+    All Guidelines
+  </a>
+  <a href="{{ url_for('guidelines', category='Attendance') }}" class="btn btn-sm {% if selected_category == 'Attendance' %}btn-primary{% else %}btn-outline{% endif %}">
+    Attendance (75% Rule)
+  </a>
+  <a href="{{ url_for('guidelines', category='Examinations') }}" class="btn btn-sm {% if selected_category == 'Examinations' %}btn-primary{% else %}btn-outline{% endif %}">
+    Examinations & Passing
+  </a>
+  <a href="{{ url_for('guidelines', category='Laboratory') }}" class="btn btn-sm {% if selected_category == 'Laboratory' %}btn-primary{% else %}btn-outline{% endif %}">
+    Lab Regulations
+  </a>
+  <a href="{{ url_for('guidelines', category='Library') }}" class="btn btn-sm {% if selected_category == 'Library' %}btn-primary{% else %}btn-outline{% endif %}">
+    Library Policy
+  </a>
+  <a href="{{ url_for('guidelines', category='Conduct') }}" class="btn btn-sm {% if selected_category == 'Conduct' %}btn-primary{% else %}btn-outline{% endif %}">
+    Conduct & Anti-Ragging
+  </a>
+  <a href="{{ url_for('guidelines', category='Dress Code') }}" class="btn btn-sm {% if selected_category == 'Dress Code' %}btn-primary{% else %}btn-outline{% endif %}">
+    Dress & ID Card
+  </a>
+  <a href="{{ url_for('guidelines', category='Placement') }}" class="btn btn-sm {% if selected_category == 'Placement' %}btn-primary{% else %}btn-outline{% endif %}">
+    Placement Drives
+  </a>
+</div>
+
+<!-- GUIDELINES GRID -->
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+  {% for s in sops %}
+  <div class="card" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span class="badge {% if s.category == 'Attendance' %}badge-warning{% elif s.category == 'Examinations' %}badge-danger{% elif s.category == 'Laboratory' %}badge-info{% elif s.category == 'Conduct' %}badge-danger{% else %}badge-secondary{% endif %}">
+          {{ s.category }}
+        </span>
+        <code style="font-size: 0.75rem; color: #64748b;">{{ s.sop_id }}</code>
+      </div>
+      <p style="font-size: 0.88rem; color: #1e293b; line-height: 1.5; font-weight: 500;">
+        {{ s.guideline }}
+      </p>
+    </div>
+
+    <div style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed var(--border-color); font-size: 0.75rem; color: #64748b; display: flex; align-items: center; gap: 0.4rem;">
+      <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> Verified Autonomous Regulation
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- EMERGENCY CONTACT INFORMATION SECTION -->
+<div class="card" style="background: #0f172a; color: #ffffff;">
+  <div class="card-header" style="border-bottom-color: #1e293b;">
+    <div class="card-title" style="color: #ffffff;">
+      <i class="fa-solid fa-phone-volume" style="color: #38bdf8;"></i>
+      <span>Emergency & Administrative Contact Directory</span>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; font-size: 0.88rem;">
+    <div>
+      <h5 style="color: #38bdf8; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.35rem;">College Campus Address</h5>
+      <p style="color: #cbd5e1;">
+        Sri Ramakrishna College of Arts and Science for Women<br>
+        #395, Sarojini Naidu Road, Siddhapudur,<br>
+        Coimbatore - 641044, Tamil Nadu
+      </p>
+    </div>
+    <div>
+      <h5 style="color: #38bdf8; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.35rem;">Office Contact</h5>
+      <p style="color: #cbd5e1;">
+        <strong>Phone:</strong> 0422-2243624<br>
+        <strong>Mobile / Helpdesk:</strong> 7373144766<br>
+        <strong>Official Website:</strong> <a href="https://www.srcw.ac.in" target="_blank" style="color: #60a5fa;">www.srcw.ac.in</a>
+      </p>
+    </div>
+    <div>
+      <h5 style="color: #38bdf8; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.35rem;">Leadership & Administration</h5>
+      <p style="color: #cbd5e1;">
+        <strong>Principal:</strong> Dr. K. Chitra, M.Com, MBA, Ph.D.<br>
+        <strong>Chairperson:</strong> Shri. R. Sundar<br>
+        <strong>CEO & Secretary:</strong> Shri. C. V. Ramkumar
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

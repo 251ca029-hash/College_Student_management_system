@@ -1,0 +1,21 @@
+observation_id,student_id,faculty_user_id,observation_date,academic_performance,communication,teamwork,technical_skills,faculty_remarks
+O001,CS001,U003,2026-02-04,Average,Good,Good,Average,Cooperative in team tasks; should revise fundamentals regularly.
+O002,CS002,U003,2026-03-13,Good,Good,Excellent,Good,Good grasp of concepts; can reach top ranks with more practice.
+O003,CS003,U003,2026-02-03,Needs Improvement,Average,Average,Needs Improvement,Struggles with core concepts; extra practice sessions recommended.
+O004,CS004,U003,2026-03-11,Good,Good,Excellent,Good,Good grasp of concepts; can reach top ranks with more practice.
+O005,CS005,U002,2026-01-08,Average,Good,Good,Average,Performs adequately; needs more practice in problem solving.
+O006,CS006,U003,2026-03-02,Needs Improvement,Average,Average,Needs Improvement,Struggles with core concepts; extra practice sessions recommended.
+O007,CS007,U003,2026-03-21,Needs Improvement,Needs Improvement,Average,Needs Improvement,Shows little engagement; parent meeting recommended.
+O008,CS008,U003,2026-01-19,Excellent,Excellent,Excellent,Excellent,Highly motivated and self-driven; strong candidate for placement and research.
+O009,CS009,U003,2026-01-16,Average,Good,Good,Average,Cooperative in team tasks; should revise fundamentals regularly.
+O010,CS010,U003,2026-02-11,Needs Improvement,Average,Average,Needs Improvement,Struggles with core concepts; extra practice sessions recommended.
+O011,CS011,U002,2026-02-14,Good,Good,Excellent,Good,Good grasp of concepts; can reach top ranks with more practice.
+O012,CS012,U003,2026-03-13,Average,Good,Good,Average,Performs adequately; needs more practice in problem solving.
+O013,CS013,U003,2026-01-11,Excellent,Excellent,Excellent,Excellent,Highly motivated and self-driven; strong candidate for placement and research.
+O014,CS014,U003,2026-01-25,Average,Good,Good,Average,Cooperative in team tasks; should revise fundamentals regularly.
+O015,CS015,U002,2026-03-28,Good,Good,Excellent,Good,Good grasp of concepts; can reach top ranks with more practice.
+O016,CS016,U003,2026-01-07,Needs Improvement,Needs Improvement,Average,Needs Improvement,Shows little engagement; parent meeting recommended.
+O017,CS017,U003,2026-03-15,Average,Good,Good,Average,Performs adequately; needs more practice in problem solving.
+O018,CS018,U002,2026-02-18,Average,Good,Good,Average,Performs adequately; needs more practice in problem solving.
+O019,CS019,U003,2026-02-23,Excellent,Excellent,Excellent,Excellent,Highly motivated and self-driven; strong candidate for placement and research.
+O020,CS020,U002,2026-01-21,Good,Good,Excellent,Good,Steady and dependable; submits assignments on time and participates actively.

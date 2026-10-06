@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Supabase PostgreSQL Database Settings - SRCW{% endblock %}
+{% block page_heading %}Supabase & Database Management Console{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+  <!-- LEFT: Supabase Connection Configuration -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-server" style="color: var(--primary);"></i>
+        <span>Supabase PostgreSQL Integration</span>
+      </div>
+      <span class="badge {% if db_status.supabase_available %}badge-success{% else %}badge-warning{% endif %}">
+        {{ 'Driver Installed' if db_status.supabase_available else 'Local SQLite' }}
+      </span>
+    </div>
+
+    <p style="font-size: 0.85rem; color: #475569; margin-bottom: 1.25rem; line-height: 1.5;">
+      Connect this application directly to your Supabase PostgreSQL cloud project. When configured, queries and data persistence synchronize with your remote Supabase instance.
+    </p>
+
+    <!-- Test Result Feedback -->
+    {% if test_result %}
+      <div class="alert-banner {% if test_result.success %}success{% else %}danger{% endif %}" style="margin-bottom: 1rem; padding: 0.75rem 1rem;">
+        <div class="alert-text">{{ test_result.message }}</div>
+      </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('admin_settings') }}">
+      <input type="hidden" name="action" value="test_supabase">
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Supabase Project URL</label>
+        <input type="url" class="form-control" name="supabase_url" placeholder="https://xyzcompany.supabase.co" value="{{ db_status.supabase_url if 'Not configured' not in db_status.supabase_url else '' }}" style="padding-left: 1rem;" required>
+        <span style="font-size: 0.74rem; color: #64748b;">Find this under Supabase Project Settings &gt; API &gt; Project URL</span>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Supabase Anon / Service Role Key</label>
+        <input type="password" class="form-control" name="supabase_key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." style="padding-left: 1rem;" required>
+        <span style="font-size: 0.74rem; color: #64748b;">Find this under Supabase Project Settings &gt; API &gt; Project API keys</span>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%;">
+        <i class="fa-solid fa-plug"></i> Test Supabase PostgreSQL Connection
+      </button>
+    </form>
+  </div>
+
+  <!-- RIGHT: Active Database Records & Schema Deployment -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">
+          <i class="fa-solid fa-database" style="color: var(--accent);"></i>
+          <span>Database Engine Statistics</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px;">
+          <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Active Engine</span>
+          <h4 style="font-size: 1.25rem; font-weight: 800; color: #1e40af; text-transform: uppercase;">{{ db_status.active_mode }}</h4>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px;">
+          <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Students Seeded</span>
+          <h4 style="font-size: 1.25rem; font-weight: 800; color: #047857;">{{ db_status.student_count }}</h4>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px;">
+          <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Marks Records</span>
+          <h4 style="font-size: 1.25rem; font-weight: 800; color: #d97706;">{{ db_status.marks_count }}</h4>
+        </div>
+        <div style="background: #f8fafc; border: 1px solid var(--border-color); padding: 1rem; border-radius: 8px;">
+          <span style="font-size: 0.75rem; color: #64748b; text-transform: uppercase;">Attendance Records</span>
+          <h4 style="font-size: 1.25rem; font-weight: 800; color: #7c3aed;">{{ db_status.attendance_count }}</h4>
+        </div>
+      </div>
+
+      <div style="background: #f1f5f9; padding: 1rem; border-radius: 8px; font-size: 0.84rem;">
+        <strong style="color: #0f172a;"><i class="fa-solid fa-code"></i> Deploying to Supabase:</strong>
+        <p style="color: #475569; margin-top: 0.35rem; line-height: 1.45;">
+          To initialize your Supabase PostgreSQL database, open your Supabase Dashboard &gt; <strong>SQL Editor</strong>, 
+          and run the pre-built script file located at:
+          <br><code style="background: #fff; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;">schema_supabase.sql</code>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

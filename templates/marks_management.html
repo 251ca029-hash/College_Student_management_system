@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Marks Management - College Portal{% endblock %}
+{% block page_heading %}Examinations & Marks Management{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <i class="fa-solid fa-chart-bar" style="color: var(--primary);"></i>
+        <span>Subject-Wise Marks & Performance Records</span>
+      </div>
+      <p style="font-size: 0.82rem; color: #64748b; margin-top: 0.2rem;">
+        Evaluation Scheme: 40 Marks Internal Assessment + 60 Marks Semester End Examination (Pass: Min 21 in External & 40 Total).
+      </p>
+    </div>
+    
+    <div style="display: flex; gap: 0.6rem; align-items: center;">
+      <input type="text" id="tableSearchInput" placeholder="Filter student or subject..." class="chat-input" style="width: 220px; padding: 0.4rem 0.75rem;">
+      {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+      <button class="btn btn-primary btn-sm" onclick="openModal('markModal')">
+        <i class="fa-solid fa-plus"></i> Add / Update Marks
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Mark ID</th>
+          <th>Student</th>
+          <th>Subject</th>
+          <th>Internal (40)</th>
+          <th>External (60)</th>
+          <th>Total (100)</th>
+          <th>Grade</th>
+          <th>Result</th>
+          <th>Performance Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in marks %}
+        <tr>
+          <td><code>{{ m.mark_id }}</code></td>
+          <td>
+            <strong>{{ m.student_name or m.student_id }}</strong><br>
+            <span style="font-size: 0.72rem; color: #64748b;">{{ m.student_id }}</span>
+          </td>
+          <td>
+            <strong>{{ m.subject_name }}</strong><br>
+            <span style="font-size: 0.72rem; color: #64748b;">{{ m.subject_code }}</span>
+          </td>
+          <td>{{ m.internal_marks_40 }}</td>
+          <td>{{ m.external_marks_60 }}</td>
+          <td style="font-weight: 700; font-size: 0.95rem; color: {% if m.total_marks_100 >= 60 %}#047857{% else %}#b91c1c{% endif %};">
+            {{ m.total_marks_100 }}
+          </td>
+          <td>
+            <span class="badge grade-{{ m.grade|replace('+', '-plus') }}">{{ m.grade }}</span>
+          </td>
+          <td>
+            <span class="badge {% if m.result == 'Pass' %}badge-success{% else %}badge-danger{% endif %}">
+              {{ m.result }}
+            </span>
+          </td>
+          <td>
+            {% if m.total_marks_100 >= 85 and m.result == 'Pass' %}
+              <span class="badge badge-success">Excellent</span>
+            {% elif m.total_marks_100 >= 65 and m.result == 'Pass' %}
+              <span class="badge badge-info">Good</span>
+            {% else %}
+              <span class="badge badge-danger">Needs Improvement</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="display: flex; gap: 0.35rem;">
+              <a href="{{ url_for('report_card', student_id=m.student_id) }}" class="btn btn-outline btn-sm" target="_blank" title="Report Sheet">
+                <i class="fa-solid fa-file-lines"></i>
+              </a>
+              {% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+              <button class="btn btn-outline btn-sm" title="Edit Mark" onclick="populateEditMark('{{ m.mark_id }}', '{{ m.student_id }}', '{{ m.subject_id }}', '{{ m.internal_marks_40 }}', '{{ m.external_marks_60 }}')">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADD / UPDATE MARKS MODAL -->
+{% if current_user and current_user.role in ['Faculty', 'Admin'] %}
+<div id="markModal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; align-items: center; justify-content: center; padding: 1rem;">
+  <div style="background: #fff; width: 100%; max-width: 480px; border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 1.2rem; font-weight: 700; color: #0f172a;" id="modalMarkTitle">Record / Update Marks</h3>
+      <button onclick="closeModal('markModal')" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #64748b;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form method="POST" action="{{ url_for('api_upsert_mark') }}">
+      <input type="hidden" name="mark_id" id="modal_mark_id" value="">
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Select Student</label>
+        <select class="form-control" name="student_id" id="modal_student_id" style="padding-left: 1rem;" required>
+          {% for st in students %}
+          <option value="{{ st.student_id }}">{{ st.student_id }} - {{ st.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label class="form-label">Select Subject</label>
+        <select class="form-control" name="subject_id" id="modal_subject_id" style="padding-left: 1rem;" required>
+          {% for sub in subjects %}
+          <option value="{{ sub.subject_id }}">{{ sub.subject_code }} - {{ sub.subject_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Internal Marks (Max 40)</label>
+          <input type="number" step="0.5" min="0" max="40" class="form-control" name="internal_marks_40" id="modal_internal" style="padding-left: 1rem;" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">External Marks (Max 60)</label>
+          <input type="number" step="0.5" min="0" max="60" class="form-control" name="external_marks_60" id="modal_external" style="padding-left: 1rem;" required>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label">Examination Session</label>
+        <input type="text" class="form-control" name="exam_session" value="2025-26 Even" style="padding-left: 1rem;">
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button type="button" class="btn btn-outline" onclick="closeModal('markModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Marks</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function populateEditMark(markId, studentId, subjectId, internal, external) {
+  document.getElementById('modalMarkTitle').innerText = 'Edit Marks Record';
+  document.getElementById('modal_mark_id').value = markId;
+  document.getElementById('modal_student_id').value = studentId;
+  document.getElementById('modal_subject_id').value = subjectId;
+  document.getElementById('modal_internal').value = internal;
+  document.getElementById('modal_external').value = external;
+  openModal('markModal');
+}
+</script>
+{% endif %}
+{% endblock %}

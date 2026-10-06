@@ -1,0 +1,304 @@
+{% extends "base.html" %}
+
+{% block title %}Machine Learning & Data Analytics - SRCW{% endblock %}
+{% block page_heading %}Academic Analytics & Machine Learning Engine{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- INTRO BANNER -->
+<div class="card" style="background: linear-gradient(135deg, #1e1b4b, #312e81); color: #ffffff; border: none;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <span style="background: rgba(255, 255, 255, 0.2); padding: 0.25rem 0.65rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
+        <i class="fa-solid fa-brain"></i> NUMPY • PANDAS • SCIKIT-LEARN
+      </span>
+      <h2 style="font-size: 1.5rem; font-weight: 800; margin-top: 0.5rem;">Academic Intelligence & Predictive Modeling</h2>
+      <p style="color: #cbd5e1; font-size: 0.88rem; margin-top: 0.25rem;">
+        Unsupervised K-Means Student Clustering, Attendance-Marks Pearson Correlation (r = {{ overview.correlation_att_marks if overview else 0.85 }}), and automated At-Risk student detection.
+      </p>
+    </div>
+  </div>
+</div>
+
+{% if overview %}
+<!-- METRIC STATS ROW -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon blue">
+      <i class="fa-solid fa-chart-line"></i>
+    </div>
+    <div class="stat-content">
+      <h3>{{ overview.class_mark_avg }}%</h3>
+      <p>Class Mean Score</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon green">
+      <i class="fa-solid fa-user-check"></i>
+    </div>
+    <div class="stat-content">
+      <h3>{{ overview.class_att_avg }}%</h3>
+      <p>Class Mean Attendance</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon purple">
+      <i class="fa-solid fa-circle-nodes"></i>
+    </div>
+    <div class="stat-content">
+      <h3>+{{ overview.correlation_att_marks }}</h3>
+      <p>Attendance/Marks Correlation (r)</p>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon amber">
+      <i class="fa-solid fa-trophy"></i>
+    </div>
+    <div class="stat-content">
+      <h3 style="font-size: 1.15rem;">{{ overview.top_student.name }}</h3>
+      <p>Top Performer ({{ overview.top_student.avg_marks }}%)</p>
+    </div>
+  </div>
+</div>
+
+<!-- CHARTS ROW -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+  <!-- Subject-wise Marks Bar Chart -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-chart-simple" style="color: var(--primary);"></i>
+        <span>Subject Performance Benchmarks</span>
+      </div>
+      <span class="badge badge-info">Pandas GroupBy Aggregate</span>
+    </div>
+    <div style="height: 280px;">
+      <canvas id="subjectMarksChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Grade Distribution Doughnut Chart -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">
+        <i class="fa-solid fa-chart-pie" style="color: var(--accent);"></i>
+        <span>Grade Distribution</span>
+      </div>
+    </div>
+    <div style="height: 280px;">
+      <canvas id="gradeDoughnutChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- SCIKIT-LEARN K-MEANS CLUSTERING SECTION -->
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">
+        <i class="fa-solid fa-microchip" style="color: #6366f1;"></i>
+        <span>Scikit-Learn K-Means Student Cohort Segmentation (k=3)</span>
+      </div>
+      <p style="font-size: 0.82rem; color: #64748b; margin-top: 0.2rem;">
+        Unsupervised Machine Learning algorithm clusters all 20 students based on multidimensional feature vectors (Attendance % vs Total Marks %).
+      </p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+    <!-- Cohort 1 -->
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 1.25rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></span>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #166534;">Cohort: High Achievers</h4>
+      </div>
+      <p style="font-size: 0.82rem; color: #166534; margin-bottom: 0.75rem;">
+        Scores &gt; 80% • Attendance &gt; 88%. Ready for top placement recruitment, research projects, and Smart India Hackathon.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+        {% for st in overview.clustering.students %}
+          {% if 'High' in st.cohort_label %}
+          <span style="font-size: 0.75rem; background: #ffffff; border: 1px solid #86efac; padding: 2px 8px; border-radius: 12px; font-weight: 600; color: #15803d;">
+            {{ st.full_name }} ({{ st.marks }}%)
+          </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Cohort 2 -->
+    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.25rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #3b82f6;"></span>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #1e40af;">Cohort: Consistent Core Performers</h4>
+      </div>
+      <p style="font-size: 0.82rem; color: #1e40af; margin-bottom: 0.75rem;">
+        Scores 60-80% • Attendance 75-88%. Solid steady performance. Recommended targeted revision in core subjects to elevate to A+.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+        {% for st in overview.clustering.students %}
+          {% if 'Consistent' in st.cohort_label %}
+          <span style="font-size: 0.75rem; background: #ffffff; border: 1px solid #93c5fd; padding: 2px 8px; border-radius: 12px; font-weight: 600; color: #1d4ed8;">
+            {{ st.full_name }} ({{ st.marks }}%)
+          </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Cohort 3 -->
+    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; padding: 1.25rem;">
+      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <span style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></span>
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: #991b1b;">Cohort: Critical Intervention Needed</h4>
+      </div>
+      <p style="font-size: 0.82rem; color: #991b1b; margin-bottom: 0.75rem;">
+        Scores &lt; 55% • Attendance &lt; 70% (Proforma III Risk). Urgent mentoring and parent meeting recommended.
+      </p>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+        {% for st in overview.clustering.students %}
+          {% if 'Risk' in st.cohort_label or 'Urgent' in st.cohort_label %}
+          <span style="font-size: 0.75rem; background: #ffffff; border: 1px solid #fca5a5; padding: 2px 8px; border-radius: 12px; font-weight: 600; color: #b91c1c;">
+            {{ st.full_name }} ({{ st.marks }}%)
+          </span>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<!-- STUDENT PERSONAL ANALYTICS VIEW -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">
+      <i class="fa-solid fa-chart-line" style="color: var(--primary);"></i>
+      <span>Your Academic Risk & Performance Diagnosis</span>
+    </div>
+    <span class="badge badge-{{ student_data.risk_assessment.badge }}">
+      {{ student_data.risk_assessment.level }}
+    </span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div>
+      <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;">Automated Diagnostic Evaluation</h4>
+      <p style="font-size: 0.88rem; color: #334155; line-height: 1.5; margin-bottom: 1rem;">
+        {{ student_data.risk_assessment.recommendation }}
+      </p>
+
+      {% if student_data.risk_assessment.reasons %}
+      <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem;">
+        <h5 style="font-size: 0.82rem; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 0.5rem;">Contributing Factors:</h5>
+        <ul style="padding-left: 1.25rem; font-size: 0.84rem; color: #1e293b;">
+          {% for r in student_data.risk_assessment.reasons %}
+          <li>{{ r }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+    <div>
+      <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem;">Subject Performance Radar</h4>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        {% for m in student_data.marks_breakdown %}
+        <div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.2rem;">
+            <span>{{ m.subject_name }}</span>
+            <span style="font-weight: 700;">{{ m.total_marks_100 }}/100 ({{ m.grade }})</span>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-track" style="height: 6px;">
+              <div class="progress-fill {% if m.total_marks_100 >= 75 %}high{% elif m.total_marks_100 >= 50 %}mid{% else %}low{% endif %}" style="width: {{ m.total_marks_100 }}%;"></div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+{% if overview %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // 1. Subject Marks Bar Chart
+  const subData = {{ overview.subject_stats | tojson }};
+  const subLabels = subData.map(s => s.subject_code);
+  const subMarks = subData.map(s => s.avg_marks);
+  const subPass = subData.map(s => s.pass_rate);
+
+  const ctxBar = document.getElementById('subjectMarksChart').getContext('2d');
+  new Chart(ctxBar, {
+    type: 'bar',
+    data: {
+      labels: subLabels,
+      datasets: [
+        {
+          label: 'Average Score (%)',
+          data: subMarks,
+          backgroundColor: '#2563eb',
+          borderRadius: 6
+        },
+        {
+          label: 'Pass Rate (%)',
+          data: subPass,
+          backgroundColor: '#10b981',
+          borderRadius: 6
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, max: 100 }
+      }
+    }
+  });
+
+  // 2. Grade Distribution Doughnut Chart
+  const gradeData = {{ overview.grade_dist | tojson }};
+  const gradeLabels = Object.keys(gradeData);
+  const gradeCounts = Object.values(gradeData);
+
+  const ctxDoughnut = document.getElementById('gradeDoughnutChart').getContext('2d');
+  new Chart(ctxDoughnut, {
+    type: 'doughnut',
+    data: {
+      labels: gradeLabels,
+      datasets: [{
+        data: gradeCounts,
+        backgroundColor: [
+          '#7e22ce', // O
+          '#10b981', // A+
+          '#0284c7', // A
+          '#eab308', // B+
+          '#f97316', // B
+          '#64748b', // C
+          '#ef4444'  // F
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+});
+</script>
+{% endif %}
+{% endblock %}
